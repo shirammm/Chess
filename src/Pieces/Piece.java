@@ -4,18 +4,19 @@ import Game.*;
 public class Piece {
 
 	protected Color color;
-	protected Tile currentTile;
+	protected int currentLocation;
 	
-	public Piece(Color color) {
+	public Piece(Color color, int currentLocation) {
 		this.color = color;
+		this.currentLocation = currentLocation;
 	}
 	
 	public Color getColor() {
 		return color;
 	}
 	
-	public Tile getLocation() {
-		return currentTile;
+	public int getLocation() {
+		return currentLocation;
 	}
 
 	
@@ -23,7 +24,9 @@ public class Piece {
 		return true;
 	}
 	
-	
+	public boolean isOccupied() {
+		return (color == Color.NONE);
+	}
 	
 	
 	

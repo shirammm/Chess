@@ -6,16 +6,17 @@ public class Pawn extends Piece {
 
 	private boolean firstMove;
 	
-	public Pawn(Color color) {
-		super(color);
+	public Pawn(Color color, int location) {
+		super(color, location);
 		firstMove = true;
 	}
 	
 //Add change function for firstMove
 	
-	public ArrayList<Integer> potentialMoves() {
+	public ArrayList<Integer> potentialMoves(Board b) {
 
-		int myLocation = currentTile.getLocation();
+		Piece[] pieces = b.getPieces();
+		int myLocation = currentLocation;
 		ArrayList<Integer> moves = new ArrayList<Integer>();
 
 		if(color == Color.WHITE) {
@@ -40,6 +41,10 @@ public class Pawn extends Piece {
 			if((myLocation - 16) < 64 && firstMove)
 				moves.add(myLocation - 9);
 		}
+		
+		for(int dest : moves) 
+			if(pieces[dest] != null && pieces[dest].getColor() == color)
+				moves.remove(new Integer(dest));
 
 		return moves;
 	}

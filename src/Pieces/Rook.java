@@ -4,13 +4,14 @@ import Game.*;
 
 public class Rook extends Piece {
 
-	public Rook(Color color) {
-		super(color);
+	public Rook(Color color, int location) {
+		super(color, location);
 	}
 	
-	public ArrayList<Integer> potentialMoves() {
+	public ArrayList<Integer> potentialMoves(Board b) {
 
-		int myLocation = currentTile.getLocation();
+		Piece[] pieces = b.getPieces();
+		int myLocation = currentLocation;
 		ArrayList<Integer> moves = new ArrayList<Integer>();
 		int myX = myLocation % 8;
 		int myY = myLocation / 8;
@@ -24,6 +25,10 @@ public class Rook extends Piece {
 		for(int j = 0; j < height; j++) 
 			if(j != myY) 
 				moves.add(myX + j*8);
+		
+		for(int dest : moves) 
+			if(pieces[dest] != null && pieces[dest].getColor() == color)
+				moves.remove(new Integer(dest));
 
 		return moves;
 	}

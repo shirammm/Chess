@@ -5,13 +5,14 @@ import Game.*;
 
 public class Bishop extends Piece {
 
-	public Bishop(Color color) {
-		super(color);
+	public Bishop(Color color, int location) {
+		super(color, location);
 	}
 	
-	public ArrayList<Integer> potentialMoves() {
+	public ArrayList<Integer> potentialMoves(Board b) {
 
-		int myLocation = currentTile.getLocation();
+		Piece[] pieces = b.getPieces();
+		int myLocation = currentLocation;
 		ArrayList<Integer> moves = new ArrayList<Integer>();
 		int myX = myLocation % 8;
 		int myY = myLocation / 8;
@@ -29,6 +30,10 @@ public class Bishop extends Piece {
 
 		for(int i = (myY - 1), j = (myX - 1); i >= 0 && j >= 0; i--, j--) 
 			moves.add(i*8 + j);
+		
+		for(int dest : moves) 
+			if(pieces[dest] != null && pieces[dest].getColor() == color)
+				moves.remove(new Integer(dest));
 
 		return moves;
 	}
