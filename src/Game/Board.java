@@ -1,108 +1,84 @@
 package Game;
 
+import java.util.ArrayList;
+
 import Pieces.*;
 
 public class Board {
 
-	private Piece[] pieces;
-	//private ArrayList<Piece> pieces;	
+	private Piece[][] pieces;
 	private boolean isInCheck;
 	private final int width = 8;		
 	private final int height = 8;	
 	private final int size = 64;	
+	private final char[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+	private final char[] numbers = {'1', '2', '3', '4', '5', '6', '7', '8'};
+	private Piece lastMoveBlack;
+	private Piece lastMoveWhite;
+	private ArrayList<Piece[][]> allPositions;
 	
 	public Board(){
-		pieces = new Piece[size];
+		pieces = new Piece[height][width];
+		allPositions = new ArrayList<Piece[][]>();
 		initializePiecesArray();
 		this.initializePieces();
 		isInCheck = false;
+		allPositions.add(pieces);
 	}
 	
 	
 	private void initializePiecesArray() {
-		for(int x = 0; x < size; x++) {
-			////pieces[x] = new Piece(Color.NONE, x); //////option
-			pieces[x]=null; 
-		}
+		for(int rank=2; rank < 5; rank++)
+			for(int file = 0; file < width; file++) 
+				pieces[rank][file]=null; 
 	}
 	
 	
 	private void initializePieces() {
-		
-		
-		
-		
-		//int[] pieces = new int[64];
-		
-		
-		
-		
-		String blackColor = "0";
-		String whiteColor = "1";
-		
-		String pawn = "001";
-		String rook = "010";
-		String knight = "011";
-		String bishop = "100";
-		String queen = "101";
-		String king = "111";
-		
-		String binaryPiece = blackColor + pawn;
-		
-		int newPiece = Integer.parseInt(binaryPiece,2);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	
 		//Initialize Pawns
-		for(int x = 0; x < width; x++) {
-			Pawn whitePawn = new Pawn(Color.WHITE, size-1-x-width);
-			pieces[size-1-x-width] = whitePawn;
-			Pawn blackPawn = new Pawn(Color.BLACK, x+width);
-			pieces[x+width] = blackPawn;
+		for(int i = 0; i < width; i++) {
+			Pawn whitePawn = new Pawn(Color.WHITE, 6, i);
+			pieces[6][i] = whitePawn;
+			Pawn blackPawn = new Pawn(Color.BLACK, 1, i);
+			pieces[1][i] = blackPawn;
 		}
 		
 		//Initialize Rooks
 		for(int i=0;i<2;i++) {
-			Rook whiteRook = new Rook(Color.WHITE, size-1-i*7);
-			pieces[size-1-i*7] = whiteRook;
-			Rook blackRook = new Rook(Color.BLACK, i*7);
-			pieces[i*7] = blackRook;
+			Rook whiteRook = new Rook(Color.WHITE, 7, i*7);
+			pieces[7][i*7] = whiteRook;
+			Rook blackRook = new Rook(Color.BLACK, 0, i*7);
+			pieces[0][i*7] = blackRook;
 		}
 		
 		//Initialize Knights
 		for(int i=0;i<2;i++) {
-			Knight whiteKnight = new Knight(Color.WHITE, size-2-i*5);
-			pieces[size-2-i*5] = whiteKnight;
-			Knight blackKnight = new Knight(Color.BLACK, 1+i*5);
-			pieces[1+i*5] = blackKnight;
+			Knight whiteKnight = new Knight(Color.WHITE, 7, 1+i*5);
+			pieces[7][1+i*5] = whiteKnight;
+			Knight blackKnight = new Knight(Color.BLACK, 0, 1+i*5);
+			pieces[0][1+i*5] = blackKnight;
 		} 
 		
 		//Initialize Bishops
 		for(int i=0;i<2;i++) {
-			Bishop whiteBishop = new Bishop(Color.WHITE, size-3-i*3);
-			pieces[size-3-i*3] = whiteBishop;
-			Bishop blackBishop = new Bishop(Color.BLACK, 2+i*3);
-			pieces[2+i*3] = blackBishop;
+			Bishop whiteBishop = new Bishop(Color.WHITE, 7, 2+i*3);
+			pieces[7][2+i*3] = whiteBishop;
+			Bishop blackBishop = new Bishop(Color.BLACK, 0, 2+i*3);
+			pieces[0][2+i*3] = blackBishop;
 		} 
 		
 		//Initialize Queens
-		Queen whiteQueen = new Queen(Color.WHITE, size-5);
-		pieces[size-5] = whiteQueen;
-		Queen blackQueen = new Queen(Color.BLACK, 3);
-		pieces[3] = blackQueen;
+		Queen whiteQueen = new Queen(Color.WHITE, 7, 3);
+		pieces[7][3] = whiteQueen;
+		Queen blackQueen = new Queen(Color.BLACK, 0, 3);
+		pieces[0][3] = blackQueen;
 				
 		//Initialize Kings
-		King whiteKing = new King(Color.WHITE, size-4);
-		pieces[size-4] = whiteKing;
-		King blackKing = new King(Color.BLACK, 4);
-		pieces[4] = blackKing;
+		King whiteKing = new King(Color.WHITE, 7, 4);
+		pieces[7][4] = whiteKing;
+		King blackKing = new King(Color.BLACK, 0, 4);
+		pieces[0][4] = blackKing;
 		
 	}
 	
@@ -117,9 +93,88 @@ public class Board {
 	}
 	
 	
-	public Piece[] getPieces() {
+	public Piece[][] getPieces() {
 		return pieces;
 	}
 	
+
+	public void printWhitePrespective() {
+		System.out.println("White Prespective:");
+		System.out.println("  |     a    |    b    |    c    |    d    |    e    |    f    |    g    |    h    |");
+		for (int i=0; i<height; i++) {
+			System.out.println("  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+			System.out.print(numbers[7-i]+" | ");
+			for (int j=0; j<width; j++) {
+				Piece current = pieces[i][j];
+				if(current==null)
+					System.out.print("         |");
+				else
+					System.out.print(current.name()+"|");
+			}
+			System.out.println(" "+numbers[7-i]);
+		}
+		System.out.println("  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+		System.out.println("  |     a    |    b    |    c    |    d    |    e    |    f    |    g    |    h    |");
+		System.out.println();
+	}
+	
+	
+	public void printBlackPrespective() {
+		System.out.println("Black Prespective:");
+		System.out.println("  |    h    |    g    |    f    |    e    |    d    |    c    |    b    |    a    |");
+		for (int i=height-1; i>-1; i--) {
+			System.out.println("  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+			System.out.print(numbers[7-i]+" |");
+			for (int j=width-1; j>-1; j--) {
+				Piece current = pieces[i][j];
+				if(current==null)
+					System.out.print("         |");
+				else
+					System.out.print(current.name()+"|");
+			}
+			System.out.println(" "+numbers[7-i]);
+		}
+		System.out.println("  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+		System.out.println("  |    h    |    g    |    f    |    e    |    d    |    c    |    b    |    a    |");
+		System.out.println();
+	}
+	
+	
+	public void move(Piece p) {
+		allPositions.add(pieces);
+		
+		if(p.getColor() == Color.BLACK) 
+			lastMoveBlack = p;
+		
+		else 
+			lastMoveWhite = p;
+		
+	}
+	
+	
+	public Piece getLastMoveBlack() {
+		return lastMoveBlack;
+	}
+	
+	
+	public Piece getLastMoveWhite() {
+		return lastMoveWhite;
+	}
+	
+	public void setPieces(Piece[][] p) {
+		pieces = p;
+	}
+	
+	public boolean goXMovesBack(int x) {
+		
+		if(x>allPositions.size())
+			return false;
+		
+		for(int i=allPositions.size()-1; i>i-x; i--) 
+			allPositions.remove(i);
+		pieces = allPositions.get(allPositions.size()-1);
+		
+		return true;
+	}
 	
 }
